@@ -37,7 +37,7 @@ app.get("/artists", (request, response) => {
 });
 
 app.get("/albums", (request, response) => {
-  const query = "SELECT * FROM albums ORDER BY name";
+  const query = "SELECT * FROM albums  ORDER BY albumName";
   connection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
@@ -48,7 +48,7 @@ app.get("/albums", (request, response) => {
 });
 
 app.get("/songs", (request, response) => {
-  const query = "SELECT * FROM songs ORDER BY name";
+  const query = "SELECT * FROM songs ORDER BY songName";
   connection.query(query, (error, results, fields) => {
     if (error) {
       console.log(error);
