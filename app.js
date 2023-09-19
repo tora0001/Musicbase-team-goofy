@@ -13,38 +13,47 @@ const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`Testdata APP listening on port ${port}`));
 
 const dbconfig = {
-   host: process.env.MYSQL_HOST,
-   database: process.env.MYSQL_DATABASE,
-   user: process.env.MYSQL_USER,
-   password: process.env.MYSQL_PASSWORD,
+  host: process.env.MYSQL_HOST,
+  database: process.env.MYSQL_DATABASE,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
 };
 
 if (process.env.MYSQL_CERT) {
-   dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
+  dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
 }
 
 const connection = mysql.createConnection(dbconfig);
 
-app.get("/musicbase", (req, res) => {
-   connection.query(`SELECT * FROM albums`, function (err, results, fields) {
-      console.log("ERR:");
-      console.log(err);
-      console.log("RESULTS:");
-      console.log(results);
-      console.log("FIELDS:");
-      console.log(fields);
-
-      res.json(results);
-   });
+app.get("/artists", (request, response) => {
+  const query = "SELECT * FROM artists ORDER BY name";
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
-app.get("/artists", (request, response) => {
-   const query = "SELECT * FROM artists ORDER BY name";
-   connection.query(query, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+app.get("/albums", (request, response) => {
+  const query = "SELECT * FROM albums ORDER BY name";
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
+app.get("/songs", (request, response) => {
+  const query = "SELECT * FROM songs ORDER BY name";
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
