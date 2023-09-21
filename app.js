@@ -44,7 +44,36 @@ app.get("/artists", (request, response) => {
 
 // create / post
 
+app.post("/artists", (request, response) => {
+   const artist = request.body;
+   const query = "INSERT INTO artists(name, image, genre) values(?,?,?);";
+   const values = [artist.name, artist.image, artist.genre];
+
+   connection.query(query, values, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
+
 // update / put
+
+app.put("/artists/:id", (request, response) => {
+   const id = request.params.id;
+   const artist = request.body;
+   const query = "UPDATE artists SET name=?, image=?, genre=? WHERE id=?;";
+   const values = [artist.name, artist.image, artist.genre, id];
+
+   connection.query(query, values, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
 
 // delete / delete
 
