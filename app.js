@@ -91,6 +91,70 @@ app.delete("/artists/:id", (request, response) => {
    });
 });
 
+// all albums from 1 artists
+
+app.get("/artists/:id/albums", (request, response) => {
+   const id = request.params.id;
+
+   const queryString = /*sql*/ `
+    SELECT * FROM albums, artists 
+    WHERE artistID=? AND
+    albums.artistID = artists.id
+    ORDER BY albums.albumName;`;
+
+   const values = [id];
+
+   connection.query(queryString, values, (error, results) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
+
+app.get("/artists/:id", (request, response) => {
+   const id = request.params.id;
+
+   const queryString = /*sql*/ `
+    SELECT * FROM artists
+    WHERE id=?;`;
+
+   const values = [id];
+
+   connection.query(queryString, values, (error, results) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
+
+// see all songs connected to an album
+
+app.get("/artists/:artistID/albums/:albumID/songs", (request, response) => {
+   const artistID = request.params.artistID;
+   const albumID = request.params.albumID;
+
+   const queryString = /*sql*/ `
+     SELECT * FROM songs
+     INNER JOIN artists ON songs.artistID = artists.id
+     INNER JOIN albums ON songs.albumID = albums.id
+     WHERE songs.artistID = ? AND songs.albumID = ?
+    ORDER BY songs.songName;`;
+
+   const values = [artistID, albumID];
+
+   connection.query(queryString, values, (error, results) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
+
 // albums CRUD functions
 
 app.get("/albums", (request, response) => {
