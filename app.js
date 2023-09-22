@@ -132,6 +132,7 @@ app.get("/artists/:id", (request, response) => {
 });
 
 // see all songs connected to an album
+// via denne kan vi tilgå alle sange tilhørende et album. no idea om det kan bruges.
 
 app.get("/artists/:artistID/albums/:albumID/songs", (request, response) => {
    const artistID = request.params.artistID;
