@@ -75,40 +75,11 @@ app.put("/artists/:id", (request, response) => {
    });
 });
 
-app.put("/albums/:id", (request, response) => {
-   const id = request.params.id;
-   const album = request.body;
-   const query = "UPDATE albums SET albumName=?, image=?, releaseYear=? WHERE id=?;";
-   const values = [album.albumName, album.image, album.releaseYear, id];
-
-   connection.query(query, values, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
-});
-
 // delete / delete
 
 app.delete("/artists/:id", (request, response) => {
    const id = request.params.id;
    const query = "DELETE FROM artists WHERE id=?;";
-   const values = [id];
-
-   connection.query(query, values, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
-});
-
-app.delete("/albums/:id", (request, response) => {
-   const id = request.params.id;
-   const query = "DELETE FROM albums WHERE id=?;";
    const values = [id];
 
    connection.query(query, values, (error, results, fields) => {
@@ -222,8 +193,8 @@ app.get("/albums", (request, response) => {
 
 app.post("/albums", (request, response) => {
    const album = request.body;
-   const query = "INSERT INTO albums(albumName, image, releaseYear, artistID) values(?,?,?,?);";
-   const values = [album.albumName, album.image, album.releaseYear, album.artistID];
+   const query = "INSERT INTO albums(albumName, image, releaseYear) values(?,?,?);";
+   const values = [album.albumName, album.image, album.releaseYear];
 
    connection.query(query, values, (error, results, fields) => {
       if (error) {
@@ -239,8 +210,8 @@ app.post("/albums", (request, response) => {
 app.put("/albums/:id", (request, response) => {
    const id = request.params.id;
    const album = request.body;
-   const query = "UPDATE albums SET albumName=?, image=?, releaseYear=?, artistID=? WHERE id=?;";
-   const values = [album.albumName, album.image, album.releaseYear, album.artistID, id];
+   const query = "UPDATE albums SET albumName=?, image=?, releaseYear=? WHERE id=?;";
+   const values = [album.albumName, album.image, album.releaseYear, id];
 
    connection.query(query, values, (error, results, fields) => {
       if (error) {
@@ -286,8 +257,8 @@ app.get("/songs", (request, response) => {
 
 app.post("/songs", (request, response) => {
    const song = request.body;
-   const query = "INSERT INTO songs(songName, length, artistID, albumID) values(?,?,?,?);";
-   const values = [song.songName, song.length, song.artistID, song.albumID];
+   const query = "INSERT INTO songs(songName, length) values(?,?);";
+   const values = [song.songName, song.length];
 
    connection.query(query, values, (error, results, fields) => {
       if (error) {
@@ -303,8 +274,8 @@ app.post("/songs", (request, response) => {
 app.put("/songs/:id", (request, response) => {
    const id = request.params.id;
    const song = request.body;
-   const query = "UPDATE songs SET songName=?, length=?, artistID=?, albumID=? WHERE id=?;";
-   const values = [song.songName, song.length, song.artistID, song.albumID, id];
+   const query = "UPDATE songs SET songName=?, length=? WHERE id=?;";
+   const values = [song.songName, song.length, id];
 
    connection.query(query, values, (error, results, fields) => {
       if (error) {
@@ -342,15 +313,23 @@ app.get("/artists/search", async (request, response) => {
 
 // songs with multiple artists
 
-app.get("multiple/songs/:id", (request, response) => {
+app.get("/songs/:id", (request, response) => {
    const id = request.params.id;
 
    // sql query to select all from the table posts
    const query = /*sql*/ `
-    SELECT songs.*, artists.name AS artistName, artists.image AS artistImage
-    FROM songs
-    INNER JOIN artists AS artists ON songs.artistID = artists.id
-    WHERE songs.id = 16;`;
+            SELECT songs.*,
+                artists.name AS artistName,
+                artists.image AS artistImage,
+                artists.genre AS artistGenre,
+                artists.id AS artistID
+            FROM songs
+            INNER JOIN artists_songs
+                ON songs.id = artists_songs.song_id
+            INNER JOIN artists
+                ON artists_songs.artist_id = artists.id
+            WHERE songs.id = ?;
+    `;
    const values = [id];
 
    connection.query(query, values, (error, results, fields) => {
@@ -366,7 +345,6 @@ app.get("multiple/songs/:id", (request, response) => {
       }
    });
 });
-
 // HELPERS
 
 function prepareSongData(results) {
@@ -380,22 +358,19 @@ function prepareSongData(results) {
             id: song.id,
             songName: song.songName,
             length: song.length,
-            // Add other post properties here
             artists: [],
          };
       }
 
       // Add user information to the post's users array
       songsWithArtists[song.id].artists.push({
-         name: post.userName,
-         title: post.userTitle,
-         image: post.userImage,
-         mail: post.userMail,
-         id: post.userId,
+         name: song.artistName,
+         image: song.artistImage,
+         genree: song.artistGenre,
+         id: song.artistID,
       });
    }
 
-   // Convert the object of posts into an array
    const songsArray = Object.values(songsWithArtists);
    return songsArray;
 }
