@@ -1,6 +1,6 @@
 # Musicbase af Fredrikke, Tobias og Lucas ØP aka Team Goofy
 
-Kør "npm install" i terminalen i vs code.
+Kør "npm install" i terminalen i vs code i backend og vær sikker på at du står på den rigtige sti.
 
 [Azure-server](https://team-goofy-musicbase.azurewebsites.net) Brug de forskellige routes i app.js for at navigere rundt
 
