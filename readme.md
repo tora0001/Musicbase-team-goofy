@@ -2,7 +2,6 @@
 
 Kør "npm install" i terminalen i vs code.
 
-Links til databasen:
-[Artists](https://team-goofy-musicbase.azurewebsites.net/artists)
-[Albums](https://team-goofy-musicbase.azurewebsites.net/albums)
-[Songs](https://team-goofy-musicbase.azurewebsites.net/songs)
+[Azure-server](https://team-goofy-musicbase.azurewebsites.net) Brug de forskellige routes i app.js for at navigere rundt
+
+[Frontend-page](https://tora0001.github.io/Musicbase-team-goofy-frontend/)
