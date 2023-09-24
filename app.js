@@ -76,18 +76,18 @@ app.put("/artists/:id", (request, response) => {
 });
 
 app.put("/albums/:id", (request, response) => {
-  const id = request.params.id;
-  const album = request.body;
-  const query = "UPDATE albums SET albumName=?, image=?, releaseYear=? WHERE id=?;";
-  const values = [album.albumName, album.image, album.releaseYear, id];
+   const id = request.params.id;
+   const album = request.body;
+   const query = "UPDATE albums SET albumName=?, image=?, releaseYear=? WHERE id=?;";
+   const values = [album.albumName, album.image, album.releaseYear, id];
 
-  connection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+   connection.query(query, values, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
 });
 
 // delete / delete
@@ -107,17 +107,17 @@ app.delete("/artists/:id", (request, response) => {
 });
 
 app.delete("/albums/:id", (request, response) => {
-  const id = request.params.id;
-  const query = "DELETE FROM albums WHERE id=?;";
-  const values = [id];
+   const id = request.params.id;
+   const query = "DELETE FROM albums WHERE id=?;";
+   const values = [id];
 
-  connection.query(query, values, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+   connection.query(query, values, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
 });
 
 // all albums from 1 artists
@@ -161,21 +161,21 @@ app.get("/artists/:id", (request, response) => {
 });
 
 app.get("/albums/:id", (request, response) => {
-  const id = request.params.id;
+   const id = request.params.id;
 
-  const queryString = /*sql*/ `
+   const queryString = /*sql*/ `
     SELECT * FROM albums
     WHERE id=?;`;
 
-  const values = [id];
+   const values = [id];
 
-  connection.query(queryString, values, (error, results) => {
-    if (error) {
-      console.log(error);
-    } else {
-      response.json(results);
-    }
-  });
+   connection.query(queryString, values, (error, results) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
 });
 
 // see all songs connected to an album
@@ -239,7 +239,7 @@ app.post("/albums", (request, response) => {
 app.put("/albums/:id", (request, response) => {
    const id = request.params.id;
    const album = request.body;
-   const query = "UPDATE albums SET albumName=?, image=?, releaseYear=?, artistID WHERE id=?;";
+   const query = "UPDATE albums SET albumName=?, image=?, releaseYear=?, artistID=? WHERE id=?;";
    const values = [album.albumName, album.image, album.releaseYear, album.artistID, id];
 
    connection.query(query, values, (error, results, fields) => {
@@ -269,9 +269,60 @@ app.delete("/albums/:id", (request, response) => {
 
 // songs CRUD functions
 
+// read / get
+
 app.get("/songs", (request, response) => {
    const query = "SELECT * FROM songs ORDER BY songName";
    connection.query(query, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
+
+// create / post
+
+app.post("/songs", (request, response) => {
+   const song = request.body;
+   const query = "INSERT INTO songs(songName, length, artistID, albumID) values(?,?,?,?);";
+   const values = [song.songName, song.length, song.artistID, song.albumID];
+
+   connection.query(query, values, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
+
+// update / put
+
+app.put("/songs/:id", (request, response) => {
+   const id = request.params.id;
+   const song = request.body;
+   const query = "UPDATE songs SET songName=?, length=?, artistID=?, albumID=? WHERE id=?;";
+   const values = [song.songName, song.length, song.artistID, song.albumID, id];
+
+   connection.query(query, values, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+      } else {
+         response.json(results);
+      }
+   });
+});
+
+// delete / delete
+
+app.delete("/songs/:id", (request, response) => {
+   const id = request.params.id;
+   const query = "DELETE FROM songs WHERE id=?;";
+   const values = [id];
+
+   connection.query(query, values, (error, results, fields) => {
       if (error) {
          console.log(error);
       } else {
