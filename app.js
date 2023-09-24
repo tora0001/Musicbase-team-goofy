@@ -75,11 +75,40 @@ app.put("/artists/:id", (request, response) => {
   });
 });
 
+app.put("/albums/:id", (request, response) => {
+  const id = request.params.id;
+  const album = request.body;
+  const query = "UPDATE albums SET albumName=?, image=?, releaseYear=? WHERE id=?;";
+  const values = [album.albumName, album.image, album.releaseYear, id];
+
+  connection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
 // delete / delete
 
 app.delete("/artists/:id", (request, response) => {
   const id = request.params.id;
   const query = "DELETE FROM artists WHERE id=?;";
+  const values = [id];
+
+  connection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
+app.delete("/albums/:id", (request, response) => {
+  const id = request.params.id;
+  const query = "DELETE FROM albums WHERE id=?;";
   const values = [id];
 
   connection.query(query, values, (error, results, fields) => {
@@ -118,6 +147,24 @@ app.get("/artists/:id", (request, response) => {
 
   const queryString = /*sql*/ `
     SELECT * FROM artists
+    WHERE id=?;`;
+
+  const values = [id];
+
+  connection.query(queryString, values, (error, results) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
+});
+
+app.get("/albums/:id", (request, response) => {
+  const id = request.params.id;
+
+  const queryString = /*sql*/ `
+    SELECT * FROM albums
     WHERE id=?;`;
 
   const values = [id];
