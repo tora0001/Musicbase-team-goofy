@@ -366,7 +366,7 @@ function prepareSongData(results) {
       songsWithArtists[song.id].artists.push({
          name: song.artistName,
          image: song.artistImage,
-         genree: song.artistGenre,
+         genre: song.artistGenre,
          id: song.artistID,
       });
    }
