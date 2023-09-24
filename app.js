@@ -15,14 +15,14 @@ app.listen(port, () => console.log(`Testdata APP listening on port ${port}`));
 // establish database connection
 
 const dbconfig = {
-   host: process.env.MYSQL_HOST,
-   database: process.env.MYSQL_DATABASE,
-   user: process.env.MYSQL_USER,
-   password: process.env.MYSQL_PASSWORD,
+  host: process.env.MYSQL_HOST,
+  database: process.env.MYSQL_DATABASE,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
 };
 
 if (process.env.MYSQL_CERT) {
-   dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
+  dbconfig.ssl = { cs: fs.readFileSync("DigiCertGlobalRootCA.crt.pem") };
 }
 
 const connection = mysql.createConnection(dbconfig);
@@ -32,152 +32,152 @@ const connection = mysql.createConnection(dbconfig);
 // read / get
 
 app.get("/artists", (request, response) => {
-   const query = "SELECT * FROM artists ORDER BY name";
-   connection.query(query, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  const query = "SELECT * FROM artists ORDER BY name";
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 // create / post
 
 app.post("/artists", (request, response) => {
-   const artist = request.body;
-   const query = "INSERT INTO artists(name, image, genre) values(?,?,?);";
-   const values = [artist.name, artist.image, artist.genre];
+  const artist = request.body;
+  const query = "INSERT INTO artists(name, image, genre) values(?,?,?);";
+  const values = [artist.name, artist.image, artist.genre];
 
-   connection.query(query, values, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  connection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 // update / put
 
 app.put("/artists/:id", (request, response) => {
-   const id = request.params.id;
-   const artist = request.body;
-   const query = "UPDATE artists SET name=?, image=?, genre=? WHERE id=?;";
-   const values = [artist.name, artist.image, artist.genre, id];
+  const id = request.params.id;
+  const artist = request.body;
+  const query = "UPDATE artists SET name=?, image=?, genre=? WHERE id=?;";
+  const values = [artist.name, artist.image, artist.genre, id];
 
-   connection.query(query, values, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  connection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 // delete / delete
 
 app.delete("/artists/:id", (request, response) => {
-   const id = request.params.id;
-   const query = "DELETE FROM artists WHERE id=?;";
-   const values = [id];
+  const id = request.params.id;
+  const query = "DELETE FROM artists WHERE id=?;";
+  const values = [id];
 
-   connection.query(query, values, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  connection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 // all albums from 1 artists
 
 app.get("/artists/:id/albums", (request, response) => {
-   const id = request.params.id;
+  const id = request.params.id;
 
-   const queryString = /*sql*/ `
+  const queryString = /*sql*/ `
     SELECT * FROM albums, artists 
     WHERE artistID=? AND
     albums.artistID = artists.id
     ORDER BY albums.albumName;`;
 
-   const values = [id];
+  const values = [id];
 
-   connection.query(queryString, values, (error, results) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  connection.query(queryString, values, (error, results) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 app.get("/artists/:id", (request, response) => {
-   const id = request.params.id;
+  const id = request.params.id;
 
-   const queryString = /*sql*/ `
+  const queryString = /*sql*/ `
     SELECT * FROM artists
     WHERE id=?;`;
 
-   const values = [id];
+  const values = [id];
 
-   connection.query(queryString, values, (error, results) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  connection.query(queryString, values, (error, results) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 // see all songs connected to an album
 // via denne kan vi tilgå alle sange tilhørende et album. no idea om det kan bruges.
 
 app.get("/artists/:artistID/albums/:albumID/songs", (request, response) => {
-   const artistID = request.params.artistID;
-   const albumID = request.params.albumID;
+  const artistID = request.params.artistID;
+  const albumID = request.params.albumID;
 
-   const queryString = /*sql*/ `
+  const queryString = /*sql*/ `
      SELECT * FROM songs
      INNER JOIN artists ON songs.artistID = artists.id
      INNER JOIN albums ON songs.albumID = albums.id
      WHERE songs.artistID = ? AND songs.albumID = ?
     ORDER BY songs.songName;`;
 
-   const values = [artistID, albumID];
+  const values = [artistID, albumID];
 
-   connection.query(queryString, values, (error, results) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  connection.query(queryString, values, (error, results) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 // albums CRUD functions
 
 app.get("/albums", (request, response) => {
-   const query = "SELECT * FROM albums  ORDER BY albumName";
-   connection.query(query, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  const query = "SELECT * FROM albums  ORDER BY albumName";
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 // songs CRUD functions
 
 app.get("/songs", (request, response) => {
-   const query = "SELECT * FROM songs ORDER BY songName";
-   connection.query(query, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  const query = "SELECT * FROM songs ORDER BY songName";
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
