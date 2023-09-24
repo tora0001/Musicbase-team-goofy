@@ -30,42 +30,42 @@ const connection = mysql.createConnection(dbconfig);
 // create an album with songs and artist
 
 app.post("/createAlbum", (request, response) => {
-   const { artist, album, songs } = request.body;
+  const { artist, album, songs } = request.body;
 
-   const artistQuery = "INSERT INTO artists (name, image, genre) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)";
-   connection.query(artistQuery, [artist.name, artist.image, artist.genre], (error) => {
-      if (error) {
-         console.error(error);
-         response.status(500).json({ error: "one error occurred" });
-      } else {
-         const getArtistID = "SELECT id FROM artists WHERE name = ?";
-         connection.query(getArtistID, [artist.name], (error, artistResults) => {
+  const artistQuery = "INSERT INTO artists (name, image, genre) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)";
+  connection.query(artistQuery, [artist.name, artist.image, artist.genre], (error) => {
+    if (error) {
+      console.error(error);
+      response.status(500).json({ error: "one error occurred" });
+    } else {
+      const getArtistID = "SELECT id FROM artists WHERE name = ?";
+      connection.query(getArtistID, [artist.name], (error, artistResults) => {
+        if (error) {
+          console.error(error);
+          response.status(500).json({ error: "two error occurred" });
+        } else {
+          const albumQuery = "INSERT INTO albums (albumName, image, releaseYear) VALUES (?, ?, ?)";
+          connection.query(albumQuery, [album.albumName, album.image, album.releaseYear], (error, albumResults) => {
             if (error) {
-               console.error(error);
-               response.status(500).json({ error: "two error occurred" });
+              console.error(error);
+              response.status(500).json({ error: "three error occurred" });
             } else {
-               const albumQuery = "INSERT INTO albums (albumName, image, releaseYear) VALUES (?, ?, ?)";
-               connection.query(albumQuery, [album.albumName, album.image, album.releaseYear], (error, albumResults) => {
+              // Opret hvert enkelt spor i albummet
+              const songQuery = "INSERT INTO songs (songName, length) VALUES (?, ?)";
+              for (const song of songs) {
+                connection.query(songQuery, [song.songName, song.length], (error) => {
                   if (error) {
-                     console.error(error);
-                     response.status(500).json({ error: "three error occurred" });
-                  } else {
-                     // Opret hvert enkelt spor i albummet
-                     const songQuery = "INSERT INTO songs (songName, length) VALUES (?, ?)";
-                     for (const song of songs) {
-                        connection.query(songQuery, [song.songName, song.length], (error) => {
-                           if (error) {
-                              console.error(error);
-                           }
-                        });
-                     }
-                     response.status(201).json({ message: "Album created successfully" });
+                    console.error(error);
                   }
-               });
+                });
+              }
+              response.status(201).json({ message: "Album created successfully" });
             }
-         });
-      }
-   });
+          });
+        }
+      });
+    }
+  });
 });
 
 // artists CRUD functions
@@ -177,14 +177,14 @@ app.get("/artists/:id", (request, response) => {
 // read / get
 
 app.get("/albums", (request, response) => {
-   const query = "SELECT * FROM albums  ORDER BY albumName";
-   connection.query(query, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
+  const query = "SELECT * FROM albums  ORDER BY albumName";
+  connection.query(query, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+    } else {
+      response.json(results);
+    }
+  });
 });
 
 app.get("/albums/:id", (request, response) => {
@@ -349,7 +349,6 @@ app.get("/songs/:id", (request, response) => {
 
   // sql query to select all from the table posts
   const query = /*sql*/ `
-   const query = /*sql*/ `
             SELECT songs.*,
                 artists.name AS artistName,
                 artists.image AS artistImage,
@@ -364,15 +363,15 @@ app.get("/songs/:id", (request, response) => {
     `;
   const values = [id];
 
-   connection.query(query, values, (error, results, fields) => {
-      if (error) {
-         console.log(error);
-         response.status(500).json({ error: "error" });
-      } else {
-         const songs = prepareSongData(results);
-         response.json(songs);
-      }
-   });
+  connection.query(query, values, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+      response.status(500).json({ error: "error" });
+    } else {
+      const songs = prepareSongData(results);
+      response.json(songs);
+    }
+  });
 });
 
 // helpers
