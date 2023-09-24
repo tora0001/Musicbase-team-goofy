@@ -345,9 +345,7 @@ app.get("/artists/search", async (request, response) => {
 // songs with multiple artists
 
 app.get("/songs/:id", (request, response) => {
-   const id = request.params.id;
-
-   // sql query to select all from the table posts
+   const id = request.params.id; // sql query to select all from the table posts
    const query = /*sql*/ `
             SELECT songs.*,
                 artists.name AS artistName,
