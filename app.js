@@ -152,28 +152,6 @@ app.get("/albums/:id", (request, response) => {
 // see all songs connected to an album
 // via denne kan vi tilgå alle sange tilhørende et album og en artist. no idea om det kan bruges.
 
-app.get("/artists/:artistID/albums/:albumID/songs", (request, response) => {
-   const artistID = request.params.artistID;
-   const albumID = request.params.albumID;
-
-   const queryString = /*sql*/ `
-     SELECT * FROM songs
-     INNER JOIN artists ON songs.artistID = artists.id
-     INNER JOIN albums ON songs.albumID = albums.id
-     WHERE songs.artistID = ? AND songs.albumID = ?
-    ORDER BY songs.songName;`;
-
-   const values = [artistID, albumID];
-
-   connection.query(queryString, values, (error, results) => {
-      if (error) {
-         console.log(error);
-      } else {
-         response.json(results);
-      }
-   });
-});
-
 // albums CRUD functions
 
 // read / get
