@@ -179,7 +179,7 @@ app.get("/albums/:id", (request, response) => {
 });
 
 // see all songs connected to an album
-// via denne kan vi tilgå alle sange tilhørende et album. no idea om det kan bruges.
+// via denne kan vi tilgå alle sange tilhørende et album og en artist. no idea om det kan bruges.
 
 app.get("/artists/:artistID/albums/:albumID/songs", (request, response) => {
    const artistID = request.params.artistID;
@@ -339,3 +339,63 @@ app.get("/artists/search", async (request, response) => {
    const results = artists.filter((artist) => artist.name.toLowerCase().includes(query));
    response.json(results);
 });
+
+// songs with multiple artists
+
+app.get("multiple/songs/:id", (request, response) => {
+   const id = request.params.id;
+
+   // sql query to select all from the table posts
+   const query = /*sql*/ `
+    SELECT songs.*, artists.name AS artistName, artists.image AS artistImage
+    FROM songs
+    INNER JOIN artists AS artists ON songs.artistID = artists.id
+    WHERE songs.id = 16;`;
+   const values = [id];
+
+   connection.query(query, values, (error, results, fields) => {
+      if (error) {
+         console.log(error);
+         // Handle error and send an error response if needed
+         response.status(500).json({ error: "An error occurred" });
+      } else {
+         // Prepare the data - array of posts with users array for each post object
+         const songs = prepareSongData(results);
+         // Send the formatted data as JSON response
+         response.json(songs);
+      }
+   });
+});
+
+// HELPERS
+
+function prepareSongData(results) {
+   // Create an object to store posts with users as an array
+   const songsWithArtists = {};
+
+   for (const song of results) {
+      // If the post is not in the object, add it
+      if (!songsWithArtists[song.id]) {
+         songsWithArtists[song.id] = {
+            id: song.id,
+            songName: song.songName,
+            length: song.length,
+            // Add other post properties here
+            artists: [],
+         };
+      }
+
+      // Add user information to the post's users array
+      songsWithArtists[song.id].artists.push({
+         name: post.userName,
+         title: post.userTitle,
+         image: post.userImage,
+         mail: post.userMail,
+         id: post.userId,
+      });
+   }
+
+   // Convert the object of posts into an array
+   const songsArray = Object.values(songsWithArtists);
+   return songsArray;
+}
